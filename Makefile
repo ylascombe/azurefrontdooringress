@@ -1,6 +1,6 @@
-.PHONY: dependencies test integration checks
+.PHONY: dependencies test integration checks publish
 
-all: dependencies checks test build docker
+all: dependencies test build docker
 
 dependencies:
 	dep ensure -v --vendor-only
@@ -16,7 +16,10 @@ build:
 	go build .
 
 checks:
-	gometalinter --vendor --disable-all --enable=errcheck --enable=vet --enable=gofmt --enable=golint --enable=deadcode --enable=varcheck --enable=structcheck --enable=misspell --deadline=15m ./...
+	golangci-lint run ./...
 
 docker:
-	docker build -t lawrencegripper/azurefrontdoor-ingress .
+	docker build -t kristoyoyo/azurefrontdoor-ingress:v0.0.2 .
+
+publish:
+	docker image push kristoyoyo/azurefrontdoor-ingress:v0.0.2

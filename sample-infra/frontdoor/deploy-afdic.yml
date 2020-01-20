@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: afdic
+  namespace: ingress-basic
+type: Opaque
+stringData:
+  azure_subscription_id: "key"
+  storage_account_key: "key"
+  storage_account_url: "url"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: afdic
+  name: afdic
+  namespace: ingress-basic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: afdic
+  template:
+    metadata:
+      labels:
+        run: afdic
+    spec:
+      containers:
+      - image: kristoyoyo/azurefrontdoor-ingress:v0.0.2
+        imagePullPolicy: Always
+        name: afdic
+        resources:
+          requests:
+            cpu: 500m
+            memory: 300Mi
+          limits:
+            cpu: 500m
+            memory: 300Mi
+        #command: ['sh', '-c', '/usr/local/bin/azurefrontdoor-ingress']
+        env:
+          - name: ACKENDPOOL_NAME
+            value: "backendPool1"
+          - name: AZURE_RESOURCE_GROUP_NAME
+            value: "todel-yohan"
+          - name: AZURE_SUBSCRIPTION_ID
+            valueFrom:
+              secretKeyRef:
+                name: afdic
+                key: azure_subscription_id
+          - name: CLUSTER_NAME
+            value: "todel-aks"
+          - name: AZURE_FRONTDOOR_NAME
+            value: "JennelleTest"
+          - name: AZURE_FRONTDOOR_HOSTNAME
+            value: "https://JennelleTest.azurefd.net"
+          - name: KUBERNETES_NAMESPACE
+            value: default
+          - name: STORAGE_ACCOUNT_URL
+            valueFrom:
+              secretKeyRef:
+                name: afdic
+                key: storage_account_url
+          - name: STORAGE_ACCOUNT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: afdic
+                key: storage_account_key
+
+

@@ -12,4 +12,5 @@ RUN apk --no-cache --update add \
 WORKDIR /usr/local/bin
 COPY --from=builder /go/bin/azurefrontdooringress .
 
-ENTRYPOINT ["azurefrontdoor-ingress"]
+#ENTRYPOINT ["azurefrontdoor-ingress"]
+ENTRYPOINT ["azurefrontdooringress"]
